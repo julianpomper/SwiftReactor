@@ -34,4 +34,4 @@ If you prefer not to use any of the aforementioned dependency managers, you can 
 * iOS 13
 * watchOS 6
 * tvOS 13
-* macOS 13
+* macOS 10.15
