@@ -187,7 +187,7 @@ In the View everything remains the same except for the binding value:
 
 The Swift Package Manager is a tool for automating the distribution of swift code and is integrated into the swift compiler.
 
-Once you have your Swift package set up (ex: with [this guide](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app), adding SwiftUIReactor as a dependency is as easy as adding it to the dependencies value of your `Package.swift`.
+Once you have your Swift package set up (ex: with [this guide](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app)), adding SwiftUIReactor as a dependency is as easy as adding it to the dependencies value of your `Package.swift`.
 
 ```swift
 dependencies: [
