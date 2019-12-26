@@ -1,6 +1,6 @@
 # SwiftUIReactor
 
-A little protocol which should help to strucuture your data flow in SwiftUI.
+A small protocol which should help to strucuture your data flow in SwiftUI.
 
 Heavily inspired by [@mecid](https://github.com/mecid)´s [blog](https://swiftwithmajid.com) and [@devxoul](https://github.com/devxoul)´s [ReactorKit](https://www.github.com/ReactorKit/ReactorKit).
 
