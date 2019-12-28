@@ -66,3 +66,51 @@ public extension Reactor {
         )
     }
 }
+
+/// Property wrapper to get a binding to a state keyPath and a associated Action
+@propertyWrapper
+public struct Action<R: Reactor, Value>: DynamicProperty {
+    @EnvironmentObject
+    var reactor: R
+    
+    let keyPath: KeyPath<R.State, Value>
+    let action: (Value) -> R.Action
+    
+    public init(_ reactorType: R.Type, keyPath: KeyPath<R.State, Value>, action: @escaping (Value) -> R.Action) {
+        self.keyPath = keyPath
+        self.action = action
+    }
+    
+    public var wrappedValue: Value {
+        get { projectedValue.wrappedValue }
+        nonmutating set { projectedValue.wrappedValue = newValue }
+    }
+    
+    public var projectedValue: Binding<Value> {
+        get { reactor.mutate(binding: keyPath, action) }
+    }
+}
+
+/// Property wrapper to get a binding to a state keyPath and a associated Mutation
+@propertyWrapper
+public struct Mutation<R: Reactor, Value>: DynamicProperty {
+    @EnvironmentObject
+    var reactor: R
+    
+    let keyPath: KeyPath<R.State, Value>
+    let mutation: (Value) -> R.Mutation
+    
+    public init(_ reactorType: R.Type, keyPath: KeyPath<R.State, Value>, mutation: @escaping (Value) -> R.Mutation) {
+        self.keyPath = keyPath
+        self.mutation = mutation
+    }
+    
+    public var wrappedValue: Value {
+        get { projectedValue.wrappedValue }
+        nonmutating set { projectedValue.wrappedValue = newValue }
+    }
+    
+    public var projectedValue: Binding<Value> {
+        get { reactor.reduce(binding: keyPath, mutation) }
+    }
+}
