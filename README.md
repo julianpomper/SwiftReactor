@@ -207,3 +207,8 @@ If you prefer not to use any of the aforementioned dependency managers, you can 
 * watchOS 6
 * tvOS 13
 * macOS 10.15
+
+
+## License
+
+SwiftUIReactor is released under the MIT license. [See LICENSE](https://github.com/julianpomper/SwiftUIReactor/blob/master/LICENSE) for details.
