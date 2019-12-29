@@ -97,10 +97,9 @@ struct ContentView: View {
     // access your reactor via the `@EnvironmentObject` property wrapper
     @EnvironmentObject var store: AppReactor
     
-    // you can create a bindind to your state value and action
-    private var name: Binding<String> {
-        store.mutate(binding: \.name) { .nameChanged($0) }
-    }
+    // you can use this property wrapper to bind your value and action
+    @Action(AppReactor.self, keyPath: \.name, action: { .nameChanged($0) })
+    private var name: String
     
     var body: some View {
         VStack {
@@ -175,9 +174,8 @@ In the View everything remains the same except for the binding value:
     @EnvironmentObject var store: AppReactor
 
     // make sure to bind to the `SubReactor` state
-    private var name: Binding<String> {
-        store.mutate(binding: \.subReactor.state.name) { .subReactor(.nameChanged($0)) }
-    }
+    @Action(AppReactor.self, keyPath: \.subReactor.state.name, action: { .subReactor(.nameChanged($0)) })
+    private var name: String
 ```
 
 

@@ -18,7 +18,7 @@ public protocol Reactor: ObservableObject {
     
     /// A State represents the current state of a section in the app.
     associatedtype State
-
+    
     /// ATTENTION: add @Published to this value.
     /// The State represents the current state of a section in the app.
     var state: State { get }
@@ -76,6 +76,12 @@ public struct Action<R: Reactor, Value>: DynamicProperty {
     let keyPath: KeyPath<R.State, Value>
     let action: (Value) -> R.Action
     
+    /**
+     - Parameters:
+         - reactorType: Type of the reactor in the view´s `EnvironmentObject`
+         - keyPath: Keypath to the value in the reactor´s state
+         - action: Action to perform in the reactor
+     */
     public init(_ reactorType: R.Type, keyPath: KeyPath<R.State, Value>, action: @escaping (Value) -> R.Action) {
         self.keyPath = keyPath
         self.action = action
@@ -100,6 +106,12 @@ public struct Mutation<R: Reactor, Value>: DynamicProperty {
     let keyPath: KeyPath<R.State, Value>
     let mutation: (Value) -> R.Mutation
     
+    /**
+     - Parameters:
+         - reactorType: Type of the reactor in the view´s `EnvironmentObject`
+         - keyPath: Keypath to the value in the reactor´s state
+         - action: Action to perform in the reactor
+     */
     public init(_ reactorType: R.Type, keyPath: KeyPath<R.State, Value>, mutation: @escaping (Value) -> R.Mutation) {
         self.keyPath = keyPath
         self.mutation = mutation
