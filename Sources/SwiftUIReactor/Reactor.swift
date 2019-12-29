@@ -110,7 +110,7 @@ public struct Mutation<R: Reactor, Value>: DynamicProperty {
      - Parameters:
          - reactorType: Type of the reactor in the view´s `EnvironmentObject`
          - keyPath: Keypath to the value in the reactor´s state
-         - action: Action to perform in the reactor
+         - mutation: Mutation to perform in the reactor
      */
     public init(_ reactorType: R.Type, keyPath: KeyPath<R.State, Value>, mutation: @escaping (Value) -> R.Mutation) {
         self.keyPath = keyPath
