@@ -68,8 +68,9 @@ public extension Reactor {
 }
 
 /// Property wrapper to get a binding to a state keyPath and a associated Action
+/// Can be used and behaves like the `@State` property wrapper
 @propertyWrapper
-public struct Action<R: Reactor, Value>: DynamicProperty {
+public struct ActionBinding<R: Reactor, Value>: DynamicProperty {
     @EnvironmentObject
     var reactor: R
     
@@ -98,8 +99,9 @@ public struct Action<R: Reactor, Value>: DynamicProperty {
 }
 
 /// Property wrapper to get a binding to a state keyPath and a associated Mutation
+/// Can be used and behaves like the `@State` property wrapper
 @propertyWrapper
-public struct Mutation<R: Reactor, Value>: DynamicProperty {
+public struct MutationBinding<R: Reactor, Value>: DynamicProperty {
     @EnvironmentObject
     var reactor: R
     
