@@ -18,7 +18,7 @@ public protocol Reactor: ObservableObject {
     
     /// A State represents the current state of a section in the app.
     associatedtype State
-
+    
     /// ATTENTION: add @Published to this value.
     /// The State represents the current state of a section in the app.
     var state: State { get }
@@ -64,5 +64,67 @@ public extension Reactor {
             get: { self.state[keyPath: keyPath] },
             set: { self.reduce(mutation: mutation($0)) }
         )
+    }
+}
+
+/// Property wrapper to get a binding to a state keyPath and a associated Action
+/// Can be used and behaves like the `@State` property wrapper
+@propertyWrapper
+public struct ActionBinding<R: Reactor, Value>: DynamicProperty {
+    @EnvironmentObject
+    var reactor: R
+    
+    let keyPath: KeyPath<R.State, Value>
+    let action: (Value) -> R.Action
+    
+    /**
+     - Parameters:
+         - reactorType: Type of the reactor in the view´s `EnvironmentObject`
+         - keyPath: Keypath to the value in the reactor´s state
+         - action: Action to perform in the reactor
+     */
+    public init(_ reactorType: R.Type, keyPath: KeyPath<R.State, Value>, action: @escaping (Value) -> R.Action) {
+        self.keyPath = keyPath
+        self.action = action
+    }
+    
+    public var wrappedValue: Value {
+        get { projectedValue.wrappedValue }
+        nonmutating set { projectedValue.wrappedValue = newValue }
+    }
+    
+    public var projectedValue: Binding<Value> {
+        get { reactor.mutate(binding: keyPath, action) }
+    }
+}
+
+/// Property wrapper to get a binding to a state keyPath and a associated Mutation
+/// Can be used and behaves like the `@State` property wrapper
+@propertyWrapper
+public struct MutationBinding<R: Reactor, Value>: DynamicProperty {
+    @EnvironmentObject
+    var reactor: R
+    
+    let keyPath: KeyPath<R.State, Value>
+    let mutation: (Value) -> R.Mutation
+    
+    /**
+     - Parameters:
+         - reactorType: Type of the reactor in the view´s `EnvironmentObject`
+         - keyPath: Keypath to the value in the reactor´s state
+         - mutation: Mutation to perform in the reactor
+     */
+    public init(_ reactorType: R.Type, keyPath: KeyPath<R.State, Value>, mutation: @escaping (Value) -> R.Mutation) {
+        self.keyPath = keyPath
+        self.mutation = mutation
+    }
+    
+    public var wrappedValue: Value {
+        get { projectedValue.wrappedValue }
+        nonmutating set { projectedValue.wrappedValue = newValue }
+    }
+    
+    public var projectedValue: Binding<Value> {
+        get { reactor.reduce(binding: keyPath, mutation) }
     }
 }
