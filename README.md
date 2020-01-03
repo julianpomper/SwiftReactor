@@ -95,7 +95,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 ```swift
 struct ContentView: View {
     // access your reactor via the `@EnvironmentObject` property wrapper
-    @EnvironmentObject var store: AppReactor
+    @EnvironmentObject var reactor: AppReactor
     
     // you can use this property wrapper to bind your value and action
     // it can be used and behaves like the `@State` property wrapper
@@ -172,7 +172,7 @@ public class AppReactor: Reactor {
 In the View everything remains the same except for the binding value:
 ```swift
     // access your reactor via the `@EnvironmentObject` property wrapper
-    @EnvironmentObject var store: AppReactor
+    @EnvironmentObject var reactor: AppReactor
 
     // make sure to bind to the `SubReactor` state
     @ActionBinding(AppReactor.self, keyPath: \.subReactor.state.name, action: { .subReactor(.nameChanged($0)) })
