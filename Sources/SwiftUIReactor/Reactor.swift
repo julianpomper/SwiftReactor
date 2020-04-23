@@ -48,7 +48,7 @@ public extension Reactor {
     func action(_ action: Action) {
         mutate(action: action)
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self]  in self?.reduce(mutation: $0) })
+            .sink(receiveValue: { [weak self] in self?.reduce(mutation: $0) })
             .store(in: &cancellables)
     }
     
