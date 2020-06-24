@@ -6,8 +6,8 @@ import PackageDescription
 let package = Package(
     name: "SwiftUIReactor",
     platforms: [
-        .iOS(.v13),
-        .tvOS(.v13),
+        .iOS(.v12),
+        .tvOS(.v12),
         .watchOS(.v6),
         .macOS(.v10_15)
     ],

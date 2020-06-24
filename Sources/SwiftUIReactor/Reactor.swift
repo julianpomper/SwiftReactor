@@ -5,9 +5,11 @@
 //  Created by Julian Pomper on 26.12.19.
 //
 
+#if canImport(Combine) && canImport(SwiftUI)
 import Combine
 import SwiftUI
 
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public protocol Reactor: ObservableObject {
     
     /// An action represents user actions.
@@ -41,6 +43,7 @@ public protocol Reactor: ObservableObject {
     func reduce<Value>(binding keyPath: KeyPath<State, Value>, _ mutation: @escaping (Value) -> Mutation) -> Binding<Value>
 }
 
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public extension Reactor {
     
     /// Starts the mutate and reduce chain
@@ -69,6 +72,7 @@ public extension Reactor {
 
 /// Property wrapper to get a binding to a state keyPath and a associated Action
 /// Can be used and behaves like the `@State` property wrapper
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 @propertyWrapper
 public struct ActionBinding<R: Reactor, Value>: DynamicProperty {
     @EnvironmentObject
@@ -100,6 +104,7 @@ public struct ActionBinding<R: Reactor, Value>: DynamicProperty {
 
 /// Property wrapper to get a binding to a state keyPath and a associated Mutation
 /// Can be used and behaves like the `@State` property wrapper
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 @propertyWrapper
 public struct MutationBinding<R: Reactor, Value>: DynamicProperty {
     @EnvironmentObject
@@ -128,3 +133,4 @@ public struct MutationBinding<R: Reactor, Value>: DynamicProperty {
         get { reactor.reduce(binding: keyPath, mutation) }
     }
 }
+#endif
