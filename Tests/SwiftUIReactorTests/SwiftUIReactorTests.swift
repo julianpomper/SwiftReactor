@@ -8,7 +8,7 @@ final class SwiftUIReactorTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
     
     override func setUp() {
-        reactor = CountingReactor()
+        reactor = CountingReactor(initialState: CountingReactor.State())
     }
     
     func testConcurrentAction() {
@@ -44,13 +44,8 @@ final class SwiftUIReactorTests: XCTestCase {
     }
 }
 
-final class CountingReactor: Reactor {
-    
-    var action = PassthroughSubject<Action, Never>()
-    
-    var mutation = PassthroughSubject<Mutation, Never>()
-    
-    
+final class CountingReactor: BaseReactor<CountingReactor.Action, CountingReactor.Mutation, CountingReactor.State> {
+
     enum Action {
         case countUp
     }
@@ -60,23 +55,14 @@ final class CountingReactor: Reactor {
     }
     
     struct State {
-        var currentCount: Int
+        var currentCount: Int = 0
     }
     
-    var cancellables: Set<AnyCancellable> = []
-    
-    @Published
-    var state: State = State(currentCount: 0)
-    
-    init() {
-        createStateStream()
+    override func mutate(action: Action) -> Mutations<Mutation> {
+        return [.countUp]
     }
     
-    func mutate(action: Action) -> Mutations<Mutation> {
-        return Mutations(sync: [.countUp])
-    }
-    
-    func reduce(state: State, mutation: Mutation) -> State {
+    override func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         
         switch mutation {
