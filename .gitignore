@@ -110,9 +110,9 @@ fastlane/test_output
 iOSInjectionProject/
 
 ### SwiftPackageManager ###
+.swiftpm
 Packages
 xcuserdata
-*.xcodeproj
 
 
 ### SwiftPM ###
