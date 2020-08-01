@@ -10,8 +10,8 @@ import SwiftUI
 
 /// A protocol to structure your data flow in SwiftUI
 ///
-/// - Important: call the `createStateStream` function in the initializer to
-/// make sure all actions are passed to the proper functions
+/// - Important: call the `createStateStream` method in the initializer to
+/// make sure all actions are passed to the proper methods
 ///
 public protocol Reactor: ObservableObject {
     
@@ -25,10 +25,10 @@ public protocol Reactor: ObservableObject {
     associatedtype State
     
     /// Passes all receiving actions down the state stream which is
-    /// defined in the `createStateStream` function
+    /// defined in the `createStateStream` method
     ///
-    /// - Important: call the `createStateStream` function in the initializer to
-    /// make sure all actions are passed to the proper functions
+    /// - Important: call the `createStateStream` method in the initializer to
+    /// make sure all actions are passed to the proper methods
     ///
     var action: PassthroughSubject<Action, Never> { get }
     
@@ -46,7 +46,7 @@ public protocol Reactor: ObservableObject {
     /// Stores all type-erasing cancellable instances for this reactor
     var cancellables: Set<AnyCancellable> { get set }
     
-    /// Use the `action(Action)` function to start the state stream, to ensure the state is mutated properly.
+    /// Use the `action(Action)` method to start the state stream, to ensure the state is mutated properly.
     /// Transforms a user action to a state mutation.
     ///
     /// - Important: If you have any side effects do it here.
@@ -59,7 +59,7 @@ public protocol Reactor: ObservableObject {
     /// # Usage:
     ///
     /// return `sync` mutations if you want to mutate the state instantly
-    /// and sychronously on the main thread. Use them for `Binding or
+    /// and sychronously on the main thread. Use them for `Binding` or
     /// if you want state changes to be animated in SwiftUI (ex.: `withAnimation`)
     ///
     ///
@@ -88,7 +88,7 @@ public protocol Reactor: ObservableObject {
     
     /// Mutates the state based on the given mutation.
     ///
-    /// - Warning: There should not be any side effects in this function.
+    /// - Warning: There should not be any side effects in this method.
     ///
     /// # Usage:
     /// ```swift
@@ -113,29 +113,29 @@ public protocol Reactor: ObservableObject {
     func reduce<Value>(binding keyPath: KeyPath<State, Value>, _ mutation: @escaping (Value) -> Mutation) -> Binding<Value>
     
     /// Transforms an action and can be used to combine it with other publishers.
-    /// It is called once when the state stream is created in the `createStateStream` function.
+    /// It is called once when the state stream is created in the `createStateStream` method.
     func transform(action: AnyPublisher<Action, Never>) -> AnyPublisher<Action, Never>
     
     /// Transforms an mutation and can be used to combine it with other publishers.
-    /// It is called once when the state stream is created in the `createStateStream` function.
+    /// It is called once when the state stream is created in the `createStateStream` method.
     func transform(mutation: AnyPublisher<Mutation, Never>) -> AnyPublisher<Mutation, Never>
     
     /// Transforms the state and can be used to combine it with other publishers.
-    /// It is called once when the state stream is created in the `createStateStream` function.
+    /// It is called once when the state stream is created in the `createStateStream` method.
     func transform(state: AnyPublisher<State, Never>) -> AnyPublisher<State, Never>
 }
 
 public extension Reactor {
     
-    /// A convenience function to send actions to the `action` subject
+    /// A convenience method to send actions to the `action` subject
     func action(_ action: Action) {
         self.action.send(action)
     }
     
-    /// Creates the state stream to properly call all functions on
+    /// Creates the state stream to properly call all methods on
     /// their dedicated threads.
     ///
-    /// - Warning: This function should only be called once when
+    /// - Warning: This methods should only be called once when
     /// the reactor is initialized
     ///
     func createStateStream() {

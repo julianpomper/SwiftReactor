@@ -1,99 +1,91 @@
 # SwiftUIReactor
 
-A small protocol which should help to structure your data flow in SwiftUI.
+A protocol which should help to structure your data flow in SwiftUI (and UIKit).
 
-Heavily inspired by [@devxoul](https://github.com/devxoul)´s [ReactorKit](https://www.github.com/ReactorKit/ReactorKit).
+Inspired by [@devxoul](https://github.com/devxoul)´s [ReactorKit](https://www.github.com/ReactorKit/ReactorKit).
 
+Special thanks to [@oanhof](https://github.com/oanhof) for contributing.
+
+## Concept
+
+This protocol helps to structure and maintain the ReactorKit architecture in your SwiftUI or UIKit (with Combine) project.
+I highly encourage you to read the concept of this architecture in the ReactorKit´s [README.md](https://github.com/ReactorKit/ReactorKit#basic-concept)
 
 ## Usage
 
-### Basic Setup
+### Reactor
 
-#### Reactor
+For a basic setup just:
 
-```swift
-public class AppReactor: Reactor {
-    
-    // marked with `@Published` to recognize any changes
-    @Published public var state = State()
-    
-    // like the DisposeBag in RxSwift, this is a collection of cancellables
-    // to cancel any subscriptions on deinit
-    public var cancellables: Set<AnyCancellable> = []
-    
-    // represents all (user) actions
-    // ex.: a value of a `TextField` changes
-    public enum Action {
-        case nameChanged(String)
-    }
-    
-    // represents all changes to the state
-    public enum Mutation {
-        case setName(String)
-    }
-    
-    // contains the all the values that represents the view
-    public struct State {
-        var name = "Hans"
-    }
-    
-    // this method takes an action and generates an AnyPubisher
-    // this allows you and should be the place to do any (async) tasks like API calls
-    // ex: you can set the `isLoading` value in your state before and after your API call
-    // so your UI shows the correct loading state
-    public func mutate(action: Action) -> AnyPublisher<Mutation, Never> {
-        switch action {
-        case .nameChanged(let name):
-            return Just(.setName(name + "action"))
-                .eraseToAnyPublisher()
-        }
-    }
-    
-    // Mutates the state baseed on the given mutation.
-    // There shouldn´t be any side effects in this method.
-    public func reduce(mutation: Mutation) {
-        switch mutation {
-        case .setName(let name):
-            state.name = name
-        }
-    }
-}
-```
+1. inherit from the `BaseReactor` class
+2. define your `Action`s, `Mutation`s and your `State`
+3. implement the `mutate(action: Action)` and `reduce(state: State, mutation: Mutation)` method
 
-#### Environment Object - SceneDelegate
+and you are ready to go.
+
+#### `mutate(action: Action)`
+This method takes an `Action` and transforms it sync or async into an mutation.
+**If you have any side effects do it here.**
+
+Return `sync` mutations if you want to mutate the state instantly
+and sychronously on the main thread.  `Binding` and `withAnimation` require the state to be changed
+on the main thread synchronously. For that reason use `sync` mutations for
+this use cases.
+
+
+Return `async` mutations if you have to do async tasks (ex.: network requests)
+or expensive tasks on a background queue
 
 ```swift
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+func mutate(action: Action) -> Mutations {
+     switch action {
+     case .noMutationNeededAction:
+         return .none
+     case .enterText(let text):
+         return Mutations(sync: .setText(text))
+     case .setSwitchAsync(let value):
+        let mutation = API.setSetting(value)
+            .catch { _ in Just(.setSwitch(!value)) }
 
-    var window: UIWindow?
+         return Mutations(sync: .setSwitch(value), async: mutation)
+     }
+ }
+ ```
+ 
+ #### `reduce(state: State, mutation: Mutation)`
+ This method takes a `State` and a `Mutation` and returns a new mutated `State`.
+ **Don't perform any side effects in this method. Extract them to the `mutate(action: Action)`**
+ 
+ ```swift
+ func reduce(state: State, mutation: Mutation) -> State {
+     var newState = state
+     switch mutation {
+     case .setText(let text):
+         newState.text = text
+     }
+     return newState
+ }
+ ```
 
-    // initialize the basic `AppReactor`
-    private let appReactor = AppReactor()
+#### `Mutations`
 
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        
-        if let windowScene = scene as? UIWindowScene {
-            let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = UIHostingController(rootView:
-                // set the reactor as environment object to access it everywhere in your view hierachy
-                ContentView()
-                    .environmentObject(appReactor)
-            )
-            self.window = window
-            window.makeKeyAndVisible()
-        }
-    }
+`Mutations` is a `struct` for a better `separation` of your sync and async mutations.
 
-    ...
-}
-```
+- `sync` is an `Array` with `Mutation`s that mutate the state instantly and are always automatically forced on the main thread synchronously. Use them specifically for UI interactions like `Binding`s, especially if the change should be animated (ex.: `withAnimation`)
 
-#### View
+- `async` is an `AnyPublisher<Mutation, Never>` that contains mutations that happen asynchronously and can mutate the state at any given time (ex.: if a network request returns a result). The `state` is always mutated on the main thread asychronously, everything before that happens on the thread of your choice.
+
+You can initialize sync `Mutations` like an array. In this case `[.mySyncMutation]` is equal to `Mutations(sync: .mySyncMutation)` or  `[.mySyncMutation, .mySecondSyncMutation]`  is equal to `Mutations(sync: [.mySyncMutation, .mySecondSyncMutation])` .
+
+If you do not want to mutate the state with an `Action` just return `.none` that equals to `Mutations()`
+
+### View
 
 ```swift
 struct ContentView: View {
     // access your reactor via the `@EnvironmentObject` property wrapper
-    @EnvironmentObject var reactor: AppReactor
+    @EnvironmentObject
+    var reactor: AppReactor
     
     // you can use this property wrapper to bind your value and action
     // it can be used and behaves like the `@State` property wrapper
@@ -105,43 +97,22 @@ struct ContentView: View {
             // access the value from the binding (the value from your current state)
             Text(name.wrappedValue)
             // bind your action to the changes of this textfield
-            TextField("Name", text: name)
+            TextField("Name", text: $name)
         }
     }
 }
 ```
 
-### Advanced
+### Reactor Nesting
 
 It is also possible to split your logic into different reactors but also ensure a single source of truth by nesting reactors in your states.
-
-#### Reactor
+In this case you have to trigger  `objectWillChange` manually.
 
 ```swift
-public class AppReactor: Reactor {
-    
-    @Published public private(set) var state = State()
-    
-    public var cancellables: Set<AnyCancellable> = []
-    
-    public enum Action {
-        case subReactor(SubReactor.Action)
-    }
-    
-    public enum Mutation {
-        case subReactor(SubReactor.Action)
-    }
-    
-    public struct State {
-        var subReactor = SubReactor()
-    }
-    
     public init() {
         // The parent reactor is not being notified about changes if the state contains a reference type.
         // An `ObservableObject` conforms to `AnyObject` so it cannot be a value type (struct)
-        // So you have to trigger the changes yourself, if you want a nested reactor
-        // TODO: bind to `objectWillChange` (not use `sink`)
-        // Please feel free to solve this with a better solution ;)
+        // For this reason you have to trigger the changes yourself, if you want a nested reactor
         state.subReactor
             .objectWillChange
             .sink(receiveValue: { [unowned self] _ in
@@ -149,34 +120,8 @@ public class AppReactor: Reactor {
             })
             .store(in: &cancellables)
     }
-    
-    public func mutate(action: Action) -> AnyPublisher<Mutation, Never> {
-        switch action {
-        case .subReactor(let action):
-            return Just(.subReactor(action)).eraseToAnyPublisher()
-        }
-    }
-    
-    public func reduce(mutation: Mutation) {
-        switch mutation {
-        case .subReactor(let action):
-            state.subReactor.action(action)
-        }
-    }
 }
 ```
-
-#### View
-In the View everything remains the same except for the binding value:
-```swift
-    // access your reactor via the `@EnvironmentObject` property wrapper
-    @EnvironmentObject var reactor: AppReactor
-
-    // make sure to bind to the `SubReactor` state
-    @ActionBinding(AppReactor.self, keyPath: \.subReactor.state.name, action: { .subReactor(.nameChanged($0)) })
-    private var name: String
-```
-
 
 ## Installation
 
