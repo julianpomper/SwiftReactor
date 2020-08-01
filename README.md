@@ -2,9 +2,7 @@
 
 A small protocol which should help to structure your data flow in SwiftUI.
 
-Heavily inspired by [@mecid](https://github.com/mecid)´s [blog](https://swiftwithmajid.com) and [@devxoul](https://github.com/devxoul)´s [ReactorKit](https://www.github.com/ReactorKit/ReactorKit).
-
-I am sure there is a lot that can be done better, so please feel free to contribute :)
+Heavily inspired by [@devxoul](https://github.com/devxoul)´s [ReactorKit](https://www.github.com/ReactorKit/ReactorKit).
 
 
 ## Usage

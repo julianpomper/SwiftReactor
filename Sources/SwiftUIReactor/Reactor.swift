@@ -70,6 +70,8 @@ public protocol Reactor: ObservableObject {
     /// ```swift
     /// func mutate(action: Action) -> Mutations {
     ///     switch action {
+    ///     case .noMutationNeededAction:
+    ///         return .none
     ///     case .enterText(let text):
     ///         return Mutations(sync: .setText(text))
     ///     case .setSwitchAsync(let value):
@@ -110,10 +112,16 @@ public protocol Reactor: ObservableObject {
     /// Bind values to mutations
     func reduce<Value>(binding keyPath: KeyPath<State, Value>, _ mutation: @escaping (Value) -> Mutation) -> Binding<Value>
     
+    /// Transforms an action and can be used to combine it with other publishers.
+    /// It is called once when the state stream is created in the `createStateStream` function.
     func transform(action: AnyPublisher<Action, Never>) -> AnyPublisher<Action, Never>
     
+    /// Transforms an mutation and can be used to combine it with other publishers.
+    /// It is called once when the state stream is created in the `createStateStream` function.
     func transform(mutation: AnyPublisher<Mutation, Never>) -> AnyPublisher<Mutation, Never>
     
+    /// Transforms the state and can be used to combine it with other publishers.
+    /// It is called once when the state stream is created in the `createStateStream` function.
     func transform(state: AnyPublisher<State, Never>) -> AnyPublisher<State, Never>
 }
 
@@ -124,6 +132,12 @@ public extension Reactor {
         self.action.send(action)
     }
     
+    /// Creates the state stream to properly call all functions on
+    /// their dedicated threads.
+    ///
+    /// - Warning: This function should only be called once when
+    /// the reactor is initialized
+    ///
     func createStateStream() {
         let stateLock = NSLock()
         
