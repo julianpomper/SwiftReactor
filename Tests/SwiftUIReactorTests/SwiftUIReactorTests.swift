@@ -8,7 +8,7 @@ final class SwiftUIReactorTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
     
     override func setUp() {
-        reactor = CountingReactor(initialState: CountingReactor.State())
+        reactor = CountingReactor()
     }
     
     func testConcurrentAction() {
@@ -30,7 +30,7 @@ final class SwiftUIReactorTests: XCTestCase {
             }
         }
         
-        waitForExpectations(timeout: 3, handler: nil)
+        waitForExpectations(timeout: 10, handler: nil)
         
         XCTAssertEqual(reactor.state.currentCount, amount)
     }
@@ -56,6 +56,10 @@ final class CountingReactor: BaseReactor<CountingReactor.Action, CountingReactor
     
     struct State {
         var currentCount: Int = 0
+    }
+    
+    init() {
+        super.init(initialState: State())
     }
     
     override func mutate(action: Action) -> Mutations<Mutation> {

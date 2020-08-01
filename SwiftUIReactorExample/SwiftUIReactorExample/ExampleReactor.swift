@@ -42,10 +42,10 @@ class ExampleReactor: BaseReactor<ExampleReactor.Action, ExampleReactor.Mutation
         case .setSwitch(let value):
             return Mutations(sync: .setSwitch(value))
         case .setSwitchAsync(let value):
-            let mutations = Just(Mutation.setSwitch(!value)).delay(for: 2, scheduler: DispatchQueue.global())
+            let mutation = Just(Mutation.setSwitch(!value)).delay(for: 2, scheduler: DispatchQueue.global())
                 .eraseToAnyPublisher()
             
-            return Mutations(sync: .setSwitch(value), async: mutations)
+            return Mutations(sync: .setSwitch(value), async: mutation)
         case .colorChangePressed(let color):
             return Mutations(sync: .setBackgroundColor(color))
         }

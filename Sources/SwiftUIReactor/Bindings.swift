@@ -2,13 +2,12 @@
 //  Bindings.swift
 //  
 //
-//  Created by Julian Pomper on 31.07.20.
+//  Created by oanhof on 31.07.20.
 //
 
 import SwiftUI
 
 public extension Reactor {
-    
     func mutate<Value>(binding keyPath: KeyPath<State, Value>, _ action: @escaping (Value) -> Action) -> Binding<Value> {
         Binding<Value>(
             get: { self.state[keyPath: keyPath] },

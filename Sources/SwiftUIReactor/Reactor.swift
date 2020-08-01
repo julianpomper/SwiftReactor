@@ -23,8 +23,13 @@ public protocol Reactor: ObservableObject {
     
     var mutation: PassthroughSubject<Mutation, Never> { get }
     
-    /// ATTENTION: add @Published to this value.
     /// The State represents the current state of a section in the app.
+    ///
+    /// - Warning: if you do not add @Published to this property
+    /// you cannot subscribe to state changes
+    ///
+    /// - Important: add @Published to this property to be
+    /// able to subscribe to changes in the state
     var state: State { get set }
     
     /// Stores all type-erasing cancellable instances for this reactor

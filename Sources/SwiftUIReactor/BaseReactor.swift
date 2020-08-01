@@ -2,12 +2,16 @@
 //  BaseReactor.swift
 //  
 //
-//  Created by Julian Pomper on 31.07.20.
+//  Created by oanhof on 31.07.20.
 //
 
 import Foundation
 import Combine
 
+/// A base class that can be used to simplify
+/// the implementation of the `Reactor` protocol.
+///
+/// It adds all necessary properties and calls the `createStateStream` function for you
 open class BaseReactor<Action, Mutation, State>: Reactor {
     
     public let action = PassthroughSubject<Action, Never>()
