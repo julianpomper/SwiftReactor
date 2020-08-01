@@ -8,6 +8,11 @@
 import Combine
 import SwiftUI
 
+/// A protocol to structure your data flow in SwiftUI
+///
+/// - Important: call the `createStateStream` function in the initializer to
+/// make sure all actions are passed to the proper functions
+///
 public protocol Reactor: ObservableObject {
     
     /// An action represents user actions.
@@ -19,6 +24,12 @@ public protocol Reactor: ObservableObject {
     /// A State represents the current state of a section in the app.
     associatedtype State
     
+    /// Passes all receiving actions down the state stream which is
+    /// defined in the `createStateStream` function
+    ///
+    /// - Important: call the `createStateStream` function in the initializer to
+    /// make sure all actions are passed to the proper functions
+    ///
     var action: PassthroughSubject<Action, Never> { get }
     
     var mutation: PassthroughSubject<Mutation, Never> { get }
@@ -35,12 +46,62 @@ public protocol Reactor: ObservableObject {
     /// Stores all type-erasing cancellable instances for this reactor
     var cancellables: Set<AnyCancellable> { get set }
     
-    /// Use the `action(Action)` method to start the mutation and reduce chain, to ensure the state is mutated properly.
-    /// Transforms a user action to a state mutation. Do all your (async) tasks here.
+    /// Use the `action(Action)` function to start the state stream, to ensure the state is mutated properly.
+    /// Transforms a user action to a state mutation.
+    ///
+    /// - Important: If you have any side effects do it here.
+    ///
+    /// - Important: `Binding` and `withAnimation` require the state to be changed
+    /// on the main thread synchronously. For that reason use `sync` mutations for
+    /// this use cases
+    ///
+    ///
+    /// # Usage:
+    ///
+    /// return `sync` mutations if you want to mutate the state instantly
+    /// and sychronously on the main thread. Use them for `Binding or
+    /// if you want state changes to be animated in SwiftUI (ex.: `withAnimation`)
+    ///
+    ///
+    /// return `async` mutations if you have to do async tasks (ex.: network requests)
+    /// or expensive tasks on a background queue
+    ///
+    ///
+    /// ```swift
+    /// func mutate(action: Action) -> Mutations {
+    ///     switch action {
+    ///     case .enterText(let text):
+    ///         return Mutations(sync: .setText(text))
+    ///     case .setSwitchAsync(let value):
+    ///         let mutation = Just(Mutation.setSwitch(!value)
+    ///             .delay(for: 2, scheduler: DispatchQueue.global())
+    ///             .eraseToAnyPublisher()
+    ///
+    ///         return Mutations(sync: .setSwitch(value), async: mutation)
+    ///     }
+    /// }
+    /// ```
+    ///
     func mutate(action: Action) -> Mutations<Mutation>
     
-    /// Mutates the state baseed on the given mutation.
-    /// There should not be any side effects in this method.
+    /// Mutates the state based on the given mutation.
+    ///
+    /// - Warning: There should not be any side effects in this function.
+    ///
+    /// # Usage:
+    /// ```swift
+    /// func reduce(state: State, mutation: Mutation) -> State {
+    ///     var newState = state
+    ///
+    ///     switch mutation {
+    ///     case .myMutation(let text):
+    ///         newState.text = text
+    ///     }
+    ///
+    ///     return newState
+    /// }
+    /// ```
+    ///
     func reduce(state: State, mutation: Mutation) -> State
     
     /// Bind values to actions
@@ -58,8 +119,7 @@ public protocol Reactor: ObservableObject {
 
 public extension Reactor {
     
-    /// Starts the mutate and reduce chain
-    /// Takes an action, to get all necessary mutations and passes them to the reduce method
+    /// A convenience function to send actions to the `action` subject
     func action(_ action: Action) {
         self.action.send(action)
     }

@@ -29,7 +29,7 @@ import Combine
 /// [.mySyncMutation]
 /// ```
 ///
-/// For convinience the static property `.none` can be used
+/// For convenience the static property `.none` can be used
 /// if there should not be a state muatation
 /// ``` swift
 /// Mutations.none
