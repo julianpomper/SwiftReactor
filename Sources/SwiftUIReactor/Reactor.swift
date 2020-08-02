@@ -125,6 +125,16 @@ public protocol Reactor: ObservableObject {
     func transform(state: AnyPublisher<State, Never>) -> AnyPublisher<State, Never>
 }
 
+private enum MutationEvent<Mutation, State> {
+    case mutation(Mutation)
+    case state(State)
+}
+
+private struct InternalState<State> {
+    var state: State
+    var forward: Bool
+}
+
 public extension Reactor {
     
     /// A convenience method to send actions to the `action` subject
@@ -141,6 +151,8 @@ public extension Reactor {
     func createStateStream() {
         let stateLock = NSLock()
         
+        let syncMutationResults = PassthroughSubject<State, Never>()
+        
         let action = self.action
             .eraseToAnyPublisher()
         
@@ -153,7 +165,12 @@ public extension Reactor {
                 guard let self = self else { return Empty().eraseToAnyPublisher() }
                 let mutations = self.mutate(action: action)
                 
-                self.processSyncMutations(mutations.sync, lock: stateLock)
+                stateLock.lock()
+                self.processSyncMutations(mutations.sync)
+                if !mutations.sync.isEmpty {
+                    syncMutationResults.send(self.state)
+                }
+                stateLock.unlock()
                 
                 return mutations.async.eraseToAnyPublisher()
             }
@@ -161,12 +178,22 @@ public extension Reactor {
         
         let transformedMutation = transform(mutation: mutation)
             .merge(with: self.mutation)
+            .map { MutationEvent<Mutation, State>.mutation($0) }
+            .merge(with: syncMutationResults.map { MutationEvent<Mutation, State>.state($0) })
 
         let state = transformedMutation
-            .scan(initialState) { [weak self] state, mutation -> State in
+            .scan(InternalState(state: initialState, forward: true)) { [weak self] state, mutation -> InternalState<State> in
                 guard let self = self else { return state }
-                return self.reduce(state: state, mutation: mutation)
+                switch mutation {
+                case .mutation(let mutation):
+                    return InternalState(state: self.reduce(state: state.state, mutation: mutation), forward: true)
+                case .state(let state):
+                    // merge results of sync mutations into the internal state, dont forward these downstream
+                    return InternalState(state: state, forward: false)
+                }
             }
+            .filter { $0.forward }
+            .map { $0.state }
             .prepend(initialState)
             .eraseToAnyPublisher()
         
@@ -178,8 +205,7 @@ public extension Reactor {
             .store(in: &cancellables)
     }
     
-    private func processSyncMutations(_ mutations: [Mutation], lock: NSLock) {
-        lock.lock()
+    private func processSyncMutations(_ mutations: [Mutation]) {
         mutations.forEach { mutation in
             if Thread.current.isMainThread {
                 state = reduce(state: state, mutation: mutation)
@@ -189,7 +215,6 @@ public extension Reactor {
                 }
             }
         }
-        lock.unlock()
     }
     
     func transform(action: AnyPublisher<Action, Never>) -> AnyPublisher<Action, Never> {

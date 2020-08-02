@@ -35,6 +35,58 @@ final class SwiftUIReactorTests: XCTestCase {
         XCTAssertEqual(reactor.state.currentCount, amount)
     }
     
+    func testConcurrentAsyncAction() {
+        let amount = 10000
+        
+        let exp = expectation(description: "counted")
+        
+        reactor.$state
+            .sink { state in
+                if state.currentCount == amount {
+                    exp.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+        
+        for _ in (1...amount) {
+            DispatchQueue.global().async {
+                self.reactor.action(.countUpAsync)
+            }
+        }
+        
+        waitForExpectations(timeout: 3, handler: nil)
+        
+        XCTAssertEqual(reactor.state.currentCount, amount)
+    }
+    
+    func testConcurrentMixedAction() {
+        let amount = 10000
+        
+        let exp = expectation(description: "counted")
+        
+        reactor.$state
+            .sink { state in
+                if state.currentCount == amount {
+                    exp.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+        
+        for idx in (1...amount) {
+            DispatchQueue.global().async {
+                if idx % 2 == 0 {
+                    self.reactor.action(.countUp)
+                } else {
+                    self.reactor.action(.countUpAsync)
+                }
+            }
+        }
+        
+        waitForExpectations(timeout: 3, handler: nil)
+        
+        XCTAssertEqual(reactor.state.currentCount, amount)
+    }
+    
     func testCount() {
         let amount = 1000
         for _ in (1...amount) {
@@ -48,6 +100,7 @@ final class CountingReactor: BaseReactor<CountingReactor.Action, CountingReactor
 
     enum Action {
         case countUp
+        case countUpAsync
     }
     
     enum Mutation {
@@ -63,7 +116,12 @@ final class CountingReactor: BaseReactor<CountingReactor.Action, CountingReactor
     }
     
     override func mutate(action: Action) -> Mutations<Mutation> {
-        return [.countUp]
+        switch action {
+        case .countUp:
+            return [.countUp]
+        case .countUpAsync:
+            return Mutations(async: Just(.countUp).eraseToAnyPublisher())
+        }
     }
     
     override func reduce(state: State, mutation: Mutation) -> State {
