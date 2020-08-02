@@ -35,7 +35,7 @@ class ExampleReactor: BaseReactor<ExampleReactor.Action, ExampleReactor.Mutation
         super.init(initialState: State())
     }
     
-    override func mutate(action: Action) -> Mutations {
+    override func mutate(action: Action) -> Mutations<Mutation> {
         switch action {
         case .enterText(let text):
             return Mutations(sync: .setText(text))
@@ -64,5 +64,11 @@ class ExampleReactor: BaseReactor<ExampleReactor.Action, ExampleReactor.Mutation
         }
         
         return newState
+    }
+    
+    override func transform(mutation: AnyPublisher<Mutation, Never>) -> AnyPublisher<Mutation, Never> {
+        mutation
+            .prepend(.setText("hello"))
+            .eraseToAnyPublisher()
     }
 }

@@ -35,4 +35,16 @@ open class BaseReactor<Action, Mutation, State>: Reactor {
     open func reduce(state: State, mutation: Mutation) -> State {
         state
     }
+    
+    open func transform(action: AnyPublisher<Action, Never>) -> AnyPublisher<Action, Never> {
+        action
+    }
+    
+    open func transform(mutation: AnyPublisher<Mutation, Never>) -> AnyPublisher<Mutation, Never> {
+        mutation
+    }
+    
+    open func transform(state: AnyPublisher<State, Never>) -> AnyPublisher<State, Never> {
+        state
+    }
 }
