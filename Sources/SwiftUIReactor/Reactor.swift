@@ -10,7 +10,7 @@ import SwiftUI
 
 /// A protocol to structure your data flow in SwiftUI
 ///
-/// - Important: call the `createStateStream` method in the initializer to
+/// - Important: call the `createStateStream` method at some point to
 /// make sure all actions are passed to the proper methods
 ///
 public protocol Reactor: ObservableObject {
@@ -27,7 +27,7 @@ public protocol Reactor: ObservableObject {
     /// Passes all receiving actions down the state stream which is
     /// defined in the `createStateStream` method
     ///
-    /// - Important: call the `createStateStream` method in the initializer to
+    /// - Important: call the `createStateStream` method at some point to
     /// make sure all actions are passed to the proper methods
     ///
     var action: PassthroughSubject<Action, Never> { get }
