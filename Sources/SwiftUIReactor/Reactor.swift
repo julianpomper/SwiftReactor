@@ -164,15 +164,18 @@ public extension Reactor {
             .flatMap { [weak self] action -> AnyPublisher<Mutation, Never> in
                 guard let self = self else { return Empty().eraseToAnyPublisher() }
                 let mutations = self.mutate(action: action)
+                let asyncMutations = mutations.async.eraseToAnyPublisher()
+                
+                guard !mutations.sync.isEmpty else {
+                    return asyncMutations
+                }
                 
                 stateLock.lock()
                 self.processSyncMutations(mutations.sync)
-                if !mutations.sync.isEmpty {
-                    syncMutationResults.send(self.state)
-                }
+                syncMutationResults.send(self.state)
                 stateLock.unlock()
                 
-                return mutations.async.eraseToAnyPublisher()
+                return asyncMutations
             }
             .eraseToAnyPublisher()
         
