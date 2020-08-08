@@ -9,7 +9,7 @@ import SwiftUI
 
 /// A property wrapper to get a reactor or one of its nested reactors from the environment.
 @propertyWrapper
-struct EnvironmentReactor<Root: Reactor, Target: Reactor>: DynamicProperty {
+public struct EnvironmentReactor<Root: Reactor, Target: Reactor>: DynamicProperty {
     @EnvironmentObject
     private var root: Root
     
@@ -29,15 +29,15 @@ struct EnvironmentReactor<Root: Reactor, Target: Reactor>: DynamicProperty {
      var reactor: DetailReactor
     ```
     */
-    init(_ keyPath: KeyPath<Root, Target>) {
+    public init(_ keyPath: KeyPath<Root, Target>) {
         self.keyPath = keyPath
     }
     
-    init() where Root == Target {
+    public init() where Root == Target {
         keyPath = \.self
     }
     
-    var wrappedValue: Target {
+    public var wrappedValue: Target {
         root[keyPath: keyPath]
     }
 }

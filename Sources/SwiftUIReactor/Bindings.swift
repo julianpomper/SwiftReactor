@@ -38,7 +38,7 @@ public struct ActionBinding<Root: Reactor, Target: Reactor, Value>: DynamicPrope
          - keyPath: Keypath to the value in the reactor´s state
          - action: Action to perform in the reactor
      */
-    init(_ reactorPath: KeyPath<Root, Target>, keyPath: KeyPath<Target.State, Value>, action: @escaping (Value) -> Target.Action) {
+    public init(_ reactorPath: KeyPath<Root, Target>, keyPath: KeyPath<Target.State, Value>, action: @escaping (Value) -> Target.Action) {
         target = EnvironmentReactor(reactorPath)
         self.keyPath = keyPath
         self.action = action
