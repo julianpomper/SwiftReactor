@@ -10,19 +10,16 @@ import SwiftUI
 import SwiftUIReactor
 
 struct ContentView: View {
-//    @EnvironmentObject
-//    private var reactor: ExampleReactor
-    
-    @ActionBinding(ExampleReactor.self, keyPath: \.text, action: ExampleReactor.Action.enterText)
+    @ActionBinding(\ExampleReactor.self, keyPath: \.text, action: ExampleReactor.Action.enterText)
     private var text: String
     
-    @ActionBinding(ExampleReactor.self, keyPath: \.switchValue, action: ExampleReactor.Action.setSwitch)
+    @ActionBinding(\ExampleReactor.self, keyPath: \.switchValue, action: ExampleReactor.Action.setSwitch)
     private var switchValue: Bool
     
-    @ActionBinding(ExampleReactor.self, keyPath: \.switchValue, action: ExampleReactor.Action.setSwitchAsync)
+    @ActionBinding(\ExampleReactor.self, keyPath: \.switchValue, action: ExampleReactor.Action.setSwitchAsync)
     private var switchValueAsync: Bool
     
-    @ActionBinding(ExampleReactor.self, keyPath: \.backgroundColor, action: ExampleReactor.Action.colorChangePressed)
+    @ActionBinding(\ExampleReactor.self, keyPath: \.backgroundColor, action: ExampleReactor.Action.colorChangePressed)
     private var backgroundColor: Color
     
     var body: some View {

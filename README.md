@@ -214,6 +214,7 @@ Add UIKit Usage
 
 ## TODOs
 - [ ] Improve example project
+- [ ] Add more tests
 
 ## Installation
 
