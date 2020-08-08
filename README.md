@@ -13,6 +13,9 @@ I highly encourage you to read the concept of this architecture in the ReactorKi
 
 ## Usage
 
+<!-- TODO: update the url if published -->
+To see the SwiftUIReactor in action, clone this repository and try the [example project](https://github.com/julianpomper/SwiftUIReactor/tree/refactoring/SwiftUIReactorExample)
+
 ### Reactor
 
 For a basic setup just:
@@ -72,7 +75,7 @@ func mutate(action: Action) -> Mutations {
 They are being called once, when the state stream is created in the `createStateStream()` method.
  
  ```swift
- // Transforms an action and can be used to combine it with other publishers.
+ /// Transforms an action and can be used to combine it with other publishers.
  func transform(action: AnyPublisher<Action, Never>) -> AnyPublisher<Action, Never>
  
  /// Transforms an mutation and can be used to combine it with other publishers.
