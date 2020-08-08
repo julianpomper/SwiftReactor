@@ -119,7 +119,12 @@ struct ContentView: View {
 }
 ```
 
+## Advanced
+
 ### Reactor Nesting
+
+<details>
+<summary>Click here to expand</summary>
 
 It is also possible to split your logic into different reactors but also ensure a single source of truth by nesting reactors in your states.
 In this case you have to trigger  `objectWillChange` manually.
@@ -138,6 +143,74 @@ In this case you have to trigger  `objectWillChange` manually.
     }
 }
 ```
+</details>
+
+### Use the `Reactor` protocol
+
+<details>
+<summary>Click here to expand</summary>
+
+If you do not want to inherit the `BaseReactor` class, you can also implement the `Reactor` protocol on your own.
+    
+1. add all necessary propeties
+2. add `@Published` to your state property
+3. call the `createStateStream()` method (ex.: in your `init()`)
+    
+This is the implementation of the `BaseReactor`:
+    
+```swift
+    /// A base class that can be used to simplify
+    /// the implementation of the `Reactor` protocol.
+    ///
+    /// It adds all necessary properties and calls the `createStateStream` function for you
+    open class BaseReactor<Action, Mutation, State>: Reactor {
+        
+        public let action = PassthroughSubject<Action, Never>()
+        
+        public let mutation = PassthroughSubject<Mutation, Never>()
+        
+        @Published
+        public var state: State
+        
+        public var cancellables = Set<AnyCancellable>()
+        
+        public init(initialState: State) {
+            state = initialState
+            createStateStream()
+        }
+        
+        open func mutate(action: Action) -> Mutations<Mutation> {
+            .none
+        }
+        
+        open func reduce(state: State, mutation: Mutation) -> State {
+            state
+        }
+        
+        open func transform(action: AnyPublisher<Action, Never>) -> AnyPublisher<Action, Never> {
+            action
+        }
+        
+        open func transform(mutation: AnyPublisher<Mutation, Never>) -> AnyPublisher<Mutation, Never> {
+            mutation
+        }
+        
+        open func transform(state: AnyPublisher<State, Never>) -> AnyPublisher<State, Never> {
+            state
+        }
+    }
+```
+</details>
+
+
+### UKit
+
+<details>
+<summary>Click here to expand</summary>
+
+Add UIKit Usage
+
+</details>
 
 ## TODOs
 - [ ] Improve example project
