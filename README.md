@@ -141,6 +141,7 @@ In this case you have to trigger  `objectWillChange` manually.
 
 ## TODOs
 - [ ] Improve example project
+- [ ] Add more tests
 
 ## Installation
 
