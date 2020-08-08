@@ -131,8 +131,8 @@ private enum MutationEvent<Mutation, State> {
 }
 
 private struct InternalState<State> {
-    var state: State
-    var forward: Bool
+    let state: State
+    let forward: Bool
 }
 
 public extension Reactor {
@@ -182,11 +182,11 @@ public extension Reactor {
             .merge(with: syncMutationResults.map { MutationEvent<Mutation, State>.state($0) })
 
         let state = transformedMutation
-            .scan(InternalState(state: initialState, forward: true)) { [weak self] state, mutation -> InternalState<State> in
-                guard let self = self else { return state }
+            .scan(InternalState(state: initialState, forward: true)) { [weak self] internalState, mutation -> InternalState<State> in
+                guard let self = self else { return internalState }
                 switch mutation {
                 case .mutation(let mutation):
-                    return InternalState(state: self.reduce(state: state.state, mutation: mutation), forward: true)
+                    return InternalState(state: self.reduce(state: internalState.state, mutation: mutation), forward: true)
                 case .state(let state):
                     // merge results of sync mutations into the internal state, dont forward these downstream
                     return InternalState(state: state, forward: false)

@@ -66,10 +66,25 @@ func mutate(action: Action) -> Mutations {
      return newState
  }
  ```
+ 
+ #### `transform()`
+ Use these methods to intersect the state stream. This is the best place to combine and insert global event streams into your reactor.
+They are being called once, when the state stream is created in the `createStateStream()` method.
+ 
+ ```swift
+ // Transforms an action and can be used to combine it with other publishers.
+ func transform(action: AnyPublisher<Action, Never>) -> AnyPublisher<Action, Never>
+ 
+ /// Transforms an mutation and can be used to combine it with other publishers.
+ func transform(mutation: AnyPublisher<Mutation, Never>) -> AnyPublisher<Mutation, Never>
+ 
+ /// Transforms the state and can be used to combine it with other publishers.
+ func transform(state: AnyPublisher<State, Never>) -> AnyPublisher<State, Never>
+ ```
 
 #### `Mutations`
 
-`Mutations` is a `struct` for a better `separation` of your sync and async mutations.
+`Mutations` is a `struct` for a better separation of your `sync` and `async` mutations.
 
 - `sync` is an `Array` with `Mutation`s that mutate the state instantly and are always automatically forced on the main thread synchronously. Use them specifically for UI interactions like `Binding`s, especially if the change should be animated (ex.: `withAnimation`)
 
@@ -78,6 +93,7 @@ func mutate(action: Action) -> Mutations {
 You can initialize sync `Mutations` like an array. In this case `[.mySyncMutation]` is equal to `Mutations(sync: .mySyncMutation)` or  `[.mySyncMutation, .mySecondSyncMutation]`  is equal to `Mutations(sync: [.mySyncMutation, .mySecondSyncMutation])` .
 
 If you do not want to mutate the state with an `Action` just return `.none` that equals to `Mutations()`
+
 
 ### View
 
@@ -122,6 +138,9 @@ In this case you have to trigger  `objectWillChange` manually.
     }
 }
 ```
+
+## TODOs
+- [ ] Improve example project
 
 ## Installation
 
