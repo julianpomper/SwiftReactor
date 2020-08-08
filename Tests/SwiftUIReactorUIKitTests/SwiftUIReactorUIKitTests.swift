@@ -12,17 +12,26 @@ import XCTest
 @testable import SwiftUIReactorUIKit
 
 final class SwiftUIReactorUIKitTests: XCTestCase {
-    var countingViewController: CountingViewController!
+    var reactor: CountingReactor!
     
     var cancellables = Set<AnyCancellable>()
     
     override func setUp() {
-        countingViewController = CountingViewController()
+        reactor = CountingReactor()
     }
     
     func testSetAndBind() {
-        let reactor = CountingReactor()
+        let countingViewController = CountingViewController()
         countingViewController.setAndBind(reactor: reactor)
+        
+        reactor.action(.countUp)
+        
+        XCTAssertEqual(countingViewController.label.text, "1")
+    }
+    
+    func testBaseReactorView() {
+        let countingViewController = BaseCountingViewController()
+        countingViewController.reactor = reactor
         
         reactor.action(.countUp)
         
@@ -30,14 +39,27 @@ final class SwiftUIReactorUIKitTests: XCTestCase {
     }
 }
 
-final class CountingViewController: UIViewController, ReactorView {
+final class BaseCountingViewController: BaseReactorView<CountingReactor> {
     
-    var reactor: CountingReactor?
+    var label = UILabel()
+    
+    override func bind(reactor: Reactor) {
+        reactor.$state
+            .map { String($0.currentCount) }
+            .assign(to: \.label.text, on: self)
+            .store(in: &cancellables)
+    }
+}
+
+final class CountingViewController: UIViewController, ReactorView {
+    typealias Reactor = CountingReactor
+    
+    var reactor: Reactor?
     var cancellables: Set<AnyCancellable> = []
     
     var label = UILabel()
     
-    func bind(reactor: CountingReactor) {
+    func bind(reactor: Reactor) {
         reactor.$state
             .map { String($0.currentCount) }
             .assign(to: \.label.text, on: self)
