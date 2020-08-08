@@ -33,9 +33,11 @@ public struct EnvironmentReactor<Root: Reactor, Target: Reactor>: DynamicPropert
         self.keyPath = keyPath
     }
     
+    #if swift(>=5.3)
     public init() where Root == Target {
         keyPath = \.self
     }
+    #endif
     
     public var wrappedValue: Target {
         root[keyPath: keyPath]
