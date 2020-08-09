@@ -108,7 +108,7 @@ struct ContentView: View {
     
     // you can use this property wrapper to bind your value and action
     // it can be used and behaves like the `@State` property wrapper
-    @ActionBinding(AppReactor.self, keyPath: \.name, action: { .nameChanged($0) })
+    @ActionBinding(\AppReactor.self, keyPath: \.name, action: AppReactor.Action.nameChanged)
     private var name: String
     
     var body: some View {
@@ -130,7 +130,7 @@ struct ContentView: View {
 <summary>Click here to expand</summary>
 
 It is also possible to split your logic into different reactors but also ensure a single source of truth by nesting reactors in your states.
-In this case you have to trigger  `objectWillChange` manually.
+In this case you have to trigger  `objectWillChange` in the reactor manually.
 
 ```swift
     public init() {
@@ -146,6 +146,27 @@ In this case you have to trigger  `objectWillChange` manually.
     }
 }
 ```
+
+To access or bind actions to nested reactors use the following property wrappers:
+
+```swift
+    // get the root Reactor
+    @EnvironmentReactor()
+    var reactor: AppReactor
+    
+    // get a nested reactor
+    @EnvironmentReactor(\AppReactor.detailViewReactor)
+    var reactor: DetailReactor
+    
+    // bind `Action`s using the root reactor
+    @ActionBinding(\AppReactor.self, keyPath: \.name, action: AppReactor.Action.nameChanged)
+    private var name: String
+    
+    // bind `Action`s using the nested reactor
+    @ActionBinding(\AppReactor.detailViewReactor, keyPath: \.age, action: DetailReactor.Action.ageChanged)
+    private var age: Int
+```
+
 </details>
 
 ### Use the `Reactor` protocol
