@@ -17,7 +17,7 @@ import SwiftUIReactor
 public protocol ReactorView: class {
     associatedtype Reactor = SwiftUIReactor.Reactor
     /**
-        use `bindAndSet` to set the reactor and call the `bind(reactor:)` func
+        use `setAndBind` to set the reactor and call the `bind(reactor:)` method
         otherwise you can set your custom `didSet` for your reactor variable
         ~~~
         {

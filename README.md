@@ -124,7 +124,7 @@ struct ContentView: View {
 
 ## Advanced
 
-### `Reactor Nesting
+### `Reactor` Nesting
 
 <details>
 <summary>Click here to expand</summary>

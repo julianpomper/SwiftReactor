@@ -18,7 +18,7 @@ open class BaseReactorView<Reactor: SwiftUIReactor.Reactor>: UIView, ReactorView
     public var reactor: Reactor? {
         didSet {
             guard let reactor = reactor else { return }
-            cancellables = Set<AnyCancellable>()
+            cancellables = []
             bind(reactor: reactor)
         }
     }
@@ -36,7 +36,7 @@ open class BaseReactorViewController<Reactor: SwiftUIReactor.Reactor>: UIViewCon
     public var reactor: Reactor? {
         didSet {
             guard let reactor = reactor else { return }
-            cancellables = Set<AnyCancellable>()
+            cancellables = []
             bind(reactor: reactor)
         }
     }
