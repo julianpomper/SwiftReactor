@@ -24,12 +24,23 @@ final class SwiftUIReactorUIKitTests: XCTestCase {
         let countingViewController = CountingViewController()
         countingViewController.setAndBind(reactor: reactor)
         
+        XCTAssertNotNil(countingViewController.reactor)
+        
         reactor.action(.countUp)
         
         XCTAssertEqual(countingViewController.label.text, "1")
     }
     
     func testBaseReactorView() {
+        let countingView = BaseCountingView()
+        countingView.reactor = reactor
+                
+        reactor.action(.countUp)
+        
+        XCTAssertEqual(countingView.label.text, "1")
+    }
+    
+    func testBaseReactorViewController() {
         let countingViewController = BaseCountingViewController()
         countingViewController.reactor = reactor
         
@@ -39,7 +50,19 @@ final class SwiftUIReactorUIKitTests: XCTestCase {
     }
 }
 
-final class BaseCountingViewController: BaseReactorView<CountingReactor> {
+final class BaseCountingView: BaseReactorView<CountingReactor> {
+    
+    var label = UILabel()
+    
+    override func bind(reactor: Reactor) {
+        reactor.$state
+            .map { String($0.currentCount) }
+            .assign(to: \.label.text, on: self)
+            .store(in: &cancellables)
+    }
+}
+
+final class BaseCountingViewController: BaseReactorViewController<CountingReactor> {
     
     var label = UILabel()
     

@@ -124,7 +124,7 @@ struct ContentView: View {
 
 ## Advanced
 
-### Reactor Nesting
+### `Reactor Nesting
 
 <details>
 <summary>Click here to expand</summary>
@@ -159,59 +159,93 @@ If you do not want to inherit the `BaseReactor` class, you can also implement th
 2. add `@Published` to your state property
 3. call the `createStateStream()` method (ex.: in your `init()`)
     
-This is the implementation of the `BaseReactor`:
-    
 ```swift
-    /// A base class that can be used to simplify
-    /// the implementation of the `Reactor` protocol.
-    ///
-    /// It adds all necessary properties and calls the `createStateStream` function for you
-    open class BaseReactor<Action, Mutation, State>: Reactor {
+    class CountingReactor: Reactor {
+    
+        enum Action {
+            case countUp
+            case countUpAsync
+        }
+        
+        enum Mutation {
+            case countUp
+        }
+        
+        struct State {
+            var currentCount: Int = 0
+        }
         
         public let action = PassthroughSubject<Action, Never>()
         
         public let mutation = PassthroughSubject<Mutation, Never>()
         
         @Published
-        public var state: State
+        public var state = State()
         
         public var cancellables = Set<AnyCancellable>()
         
-        public init(initialState: State) {
-            state = initialState
+        public init() {
             createStateStream()
         }
         
         open func mutate(action: Action) -> Mutations<Mutation> {
-            .none
+            switch action {
+            case .countUp:
+                return [.countUp]
+            case .countUpAsync:
+                return Mutations(async: Just(.countUp).eraseToAnyPublisher())
+            }
         }
         
         open func reduce(state: State, mutation: Mutation) -> State {
-            state
-        }
-        
-        open func transform(action: AnyPublisher<Action, Never>) -> AnyPublisher<Action, Never> {
-            action
-        }
-        
-        open func transform(mutation: AnyPublisher<Mutation, Never>) -> AnyPublisher<Mutation, Never> {
-            mutation
-        }
-        
-        open func transform(state: AnyPublisher<State, Never>) -> AnyPublisher<State, Never> {
-            state
+            var newState = state
+            
+            switch mutation {
+            case .countUp:
+                newState.currentCount += 1
+            }
+            
+            return newState
         }
     }
 ```
 </details>
 
 
-### UKit
+### UIKit
 
 <details>
 <summary>Click here to expand</summary>
 
-Add UIKit Usage
+`SwiftUIReactor` is also compatible with UIKit if you need it.  To use it, you have to select and install the additional library `SwiftUIReactorUIKit` when you add the SwiftPackage to your project.
+
+1. inherit from the `BaseReactorView` or `BaseReactorViewController` class
+2. set the `reactor` property somewhere (ex.: when the `UIView` or `UIViewController` is being created)
+3. implement the `bind(reactor:)` method and add your bindings
+
+<details>
+<summary>Click here so show an example</summary>
+
+```swift
+let countingViewController = BaseCountingViewController()
+countingViewController.reactor = CountingReactor()
+```
+
+```swift
+final class BaseCountingViewController: BaseReactorViewController<CountingReactor> {
+    
+    var label = UILabel()
+    
+    /// automatically called when you set the reactor
+    override func bind(reactor: Reactor) {
+        reactor.$state
+            .map { String($0.currentCount) }
+            .assign(to: \.label.text, on: self)
+            .store(in: &cancellables)
+    }
+}
+```
+</details>
 
 </details>
 
