@@ -16,6 +16,9 @@ let package = Package(
         .library(
             name: "SwiftUIReactor",
             targets: ["SwiftUIReactor"]),
+        .library(
+            name: "SwiftUIReactorUIKit",
+            targets: ["SwiftUIReactorUIKit"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -26,9 +29,17 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "SwiftUIReactor",
-            dependencies: []),
+            dependencies: [],
+            path: "Sources/SwiftUIReactor"),
+        .target(
+            name: "SwiftUIReactorUIKit",
+            dependencies: ["SwiftUIReactor"],
+            path: "Sources/SwiftUIReactorUIKit"),
         .testTarget(
             name: "SwiftUIReactorTests",
             dependencies: ["SwiftUIReactor"]),
+        .testTarget(
+            name: "SwiftUIReactorUIKitTests",
+            dependencies: ["SwiftUIReactorUIKit"])
     ]
 )
