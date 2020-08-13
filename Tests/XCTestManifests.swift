@@ -4,7 +4,9 @@ import XCTest
 public func allTests() -> [XCTestCaseEntry] {
     return [
         testCase(SwiftUIReactorTests.allTests),
-        testCase(SwiftUIReactorUIKitTests.allTests),
+        #if canImport(UIKit)
+        testCase(SwiftUIReactorUIKitTests.allTests)
+        #endif
     ]
 }
 #endif

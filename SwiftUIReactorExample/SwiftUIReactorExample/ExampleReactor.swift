@@ -38,16 +38,16 @@ class ExampleReactor: BaseReactor<ExampleReactor.Action, ExampleReactor.Mutation
     override func mutate(action: Action) -> Mutations<Mutation> {
         switch action {
         case .enterText(let text):
-            return Mutations(sync: .setText(text))
+            return [.setText(text)]
         case .setSwitch(let value):
-            return Mutations(sync: .setSwitch(value))
+            return [.setSwitch(value)]
         case .setSwitchAsync(let value):
             let mutation = Just(Mutation.setSwitch(!value)).delay(for: 2, scheduler: DispatchQueue.global())
                 .eraseToAnyPublisher()
             
             return Mutations(sync: .setSwitch(value), async: mutation)
         case .colorChangePressed(let color):
-            return Mutations(sync: .setBackgroundColor(color))
+            return [.setBackgroundColor(color)]
         }
     }
     

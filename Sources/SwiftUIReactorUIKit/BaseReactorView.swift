@@ -5,6 +5,8 @@
 //  Created by Julian Pomper on 08.08.20.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 import Combine
 import SwiftUIReactor
@@ -45,3 +47,5 @@ open class BaseReactorViewController<Reactor: SwiftUIReactor.Reactor>: UIViewCon
     
     open func bind(reactor: Reactor) { }
 }
+
+#endif

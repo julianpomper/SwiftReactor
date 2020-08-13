@@ -5,6 +5,8 @@
 //  Created by Julian Pomper on 08.08.20.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 import Combine
 
@@ -57,3 +59,5 @@ public extension ReactorView {
         bind(reactor: reactor)
     }
 }
+
+#endif

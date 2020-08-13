@@ -26,6 +26,74 @@ For a basic setup just:
 
 and you are ready to go.
 
+<details>
+<summary>Click here so show an example</summary>
+
+```swift
+class ExampleReactor: BaseReactor<ExampleReactor.Action, ExampleReactor.Mutation, ExampleReactor.State> {
+    enum Action {
+        case enterText(String)
+        case setSwitch(Bool)
+        case setSwitchAsync(Bool)
+        case colorChangePressed(Color)
+    }
+    
+    enum Mutation {
+        case setText(String)
+        case setSwitch(Bool)
+        case setBackgroundColor(Color)
+    }
+    
+    struct State {
+        var text = "initial text"
+        var switchValue = false
+        var backgroundColor = Color.white
+    }
+    
+    init() {
+        super.init(initialState: State())
+    }
+    
+    override func mutate(action: Action) -> Mutations<Mutation> {
+        switch action {
+        case .enterText(let text):
+            return [.setText(text)] //is equal to: Mutations(sync: .setText(text))
+        case .setSwitch(let value):
+            return [.setSwitch(value)] //is equal to: Mutations(sync: .setSwitch(value))
+        case .setSwitchAsync(let value):
+            let mutation = Just(Mutation.setSwitch(!value)).delay(for: 2, scheduler: DispatchQueue.global())
+                .eraseToAnyPublisher()
+            
+            return Mutations(sync: .setSwitch(value), async: mutation)
+        case .colorChangePressed(let color):
+            return [.setBackgroundColor(color)] //is equal to: Mutations(sync: .setBackgroundColor(color))
+        }
+    }
+    
+    override func reduce(state: State, mutation: Mutation) -> State {
+        var newState = state
+        
+        switch mutation {
+        case .setText(let text):
+            newState.text = text
+        case .setSwitch(let value):
+            newState.switchValue = value
+        case .setBackgroundColor(let color):
+            newState.backgroundColor = color
+        }
+        
+        return newState
+    }
+    
+    override func transform(mutation: AnyPublisher<Mutation, Never>) -> AnyPublisher<Mutation, Never> {
+        mutation
+            .prepend(.setText("hello"))
+            .eraseToAnyPublisher()
+    }
+}
+```
+</details>
+
 #### `mutate(action: Action)`
 This method takes an `Action` and transforms it sync or async into an mutation.
 **If you have any side effects do it here.**
@@ -129,22 +197,54 @@ struct ContentView: View {
 <details>
 <summary>Click here to expand</summary>
 
-It is also possible to split your logic into different reactors but also ensure a single source of truth by nesting reactors in your states.
-In this case you have to trigger  `objectWillChange` in the reactor manually.
+It is also possible to split your logic into different reactors but also ensure a single source of truth by nesting reactors states.
 
 ```swift
-    public init() {
-        // The parent reactor is not being notified about changes if the state contains a reference type.
-        // An `ObservableObject` conforms to `AnyObject` so it cannot be a value type (struct)
-        // For this reason you have to trigger the changes yourself, if you want a nested reactor
-        state.subReactor
-            .objectWillChange
-            .sink(receiveValue: { [unowned self] _ in
-                self.objectWillChange.send()
-            })
-            .store(in: &cancellables)
+    class AppReactor: BaseReactor<AppReactor.Action, AppReactor.Mutation, AppReactor.State> {
+    
+        [...]
+        
+        public enum Mutation {
+            case setDetail(DetailReactor.State)
+        }
+        
+        struct State {
+            var detail: DetailReactor.State
+        }
+        
+        let detailReactor: DetailReactor
+        
+        init() {
+        
+            detailReactor = DetailReactor()
+        
+            super.init(
+                initialState: State(
+                    detail: detailReactor.state
+                )
+            )
+        }
+        
+        override func reduce(state: State, mutation: Mutation) -> State {
+            var newState = state
+        
+            switch mutation {
+            case let .setDetail(state):
+                newState.detail = state
+            }
+            
+            return newState
+        }
+        
+        // transform the state changes to mutations
+        override func transform(mutation: AnyPublisher<Mutation, Never>) -> AnyPublisher<Mutation, Never> {
+            let detail = detailReactor.$state
+                .map { Mutation.setDetail($0) }
+            
+            return mutation
+                .merge(with: detail)
+        }
     }
-}
 ```
 
 To access or bind actions to nested reactors use the following property wrappers:
@@ -273,6 +373,7 @@ final class BaseCountingViewController: BaseReactorViewController<CountingReacto
 ## TODOs
 - [ ] Improve example project
 - [ ] Add more tests
+- [ ] Improve README
 
 ## Installation
 
