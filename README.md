@@ -13,8 +13,7 @@ I highly encourage you to read the concept of this architecture in the ReactorKi
 
 ## Usage
 
-<!-- TODO: update the url if published -->
-To see the SwiftyReactor in action, clone this repository and try the [example project](https://github.com/julianpomper/SwiftyReactor/tree/refactoring/SwiftyReactorExample)
+To see the SwiftyReactor in action, clone this repository and try the [example project](https://github.com/julianpomper/SwiftyReactor/tree/master/SwiftyReactorExample)
 
 ### Reactor
 
