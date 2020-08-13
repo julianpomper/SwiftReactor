@@ -117,7 +117,7 @@ func mutate(action: Action) -> Mutations {
         let mutation = API.setSetting(value)
             .catch { _ in Just(.setSwitch(!value)) }
 
-         return Mutations(sync: .setSwitch(value), async: mutation)
+        return Mutations(sync: .setSwitch(value), async: mutation)
      }
  }
  ```
@@ -129,10 +129,12 @@ func mutate(action: Action) -> Mutations {
  ```swift
  func reduce(state: State, mutation: Mutation) -> State {
      var newState = state
+     
      switch mutation {
      case .setText(let text):
          newState.text = text
      }
+     
      return newState
  }
  ```
