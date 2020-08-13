@@ -1,5 +1,5 @@
 //
-//  SwiftUIReactorUIKitTests.swift
+//  SwiftyReactorUIKitTests.swift
 //  
 //
 //  Created by Julian Pomper on 08.08.20.
@@ -10,10 +10,10 @@
 import UIKit
 import Combine
 import XCTest
-@testable import SwiftUIReactor
-@testable import SwiftUIReactorUIKit
+@testable import SwiftyReactor
+@testable import SwiftyReactorUIKit
 
-final class SwiftUIReactorUIKitTests: XCTestCase {
+final class SwiftyReactorUIKitTests: XCTestCase {
     var reactor: CountingReactor!
     
     var cancellables = Set<AnyCancellable>()

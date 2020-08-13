@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "SwiftUIReactor",
+    name: "SwiftyReactor",
     platforms: [
         .iOS(.v13),
         .tvOS(.v13),
@@ -14,11 +14,11 @@ let package = Package(
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(
-            name: "SwiftUIReactor",
-            targets: ["SwiftUIReactor"]),
+            name: "SwiftyReactor",
+            targets: ["SwiftyReactor"]),
         .library(
-            name: "SwiftUIReactorUIKit",
-            targets: ["SwiftUIReactorUIKit"]),
+            name: "SwiftyReactorUIKit",
+            targets: ["SwiftyReactorUIKit"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -28,18 +28,18 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
-            name: "SwiftUIReactor",
+            name: "SwiftyReactor",
             dependencies: [],
-            path: "Sources/SwiftUIReactor"),
+            path: "Sources/SwiftyReactor"),
         .target(
-            name: "SwiftUIReactorUIKit",
-            dependencies: ["SwiftUIReactor"],
-            path: "Sources/SwiftUIReactorUIKit"),
+            name: "SwiftyReactorUIKit",
+            dependencies: ["SwiftyReactor"],
+            path: "Sources/SwiftyReactorUIKit"),
         .testTarget(
-            name: "SwiftUIReactorTests",
-            dependencies: ["SwiftUIReactor"]),
+            name: "SwiftyReactorTests",
+            dependencies: ["SwiftyReactor"]),
         .testTarget(
-            name: "SwiftUIReactorUIKitTests",
-            dependencies: ["SwiftUIReactorUIKit"])
+            name: "SwiftyReactorUIKitTests",
+            dependencies: ["SwiftyReactorUIKit"])
     ]
 )

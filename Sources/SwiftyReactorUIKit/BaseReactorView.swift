@@ -9,13 +9,13 @@
 
 import UIKit
 import Combine
-import SwiftUIReactor
+import SwiftyReactor
 
 /// A base class that can be used to simplify
 /// the implementation of the `ReactorView` protocol.
 ///
 /// It adds all necessary properties and calls the `bind(reactor:)` method for you, when the `reactor` is being set
-open class BaseReactorView<Reactor: SwiftUIReactor.Reactor>: UIView, ReactorView {
+open class BaseReactorView<Reactor: SwiftyReactor.Reactor>: UIView, ReactorView {
     
     public var reactor: Reactor? {
         didSet {
@@ -34,7 +34,7 @@ open class BaseReactorView<Reactor: SwiftUIReactor.Reactor>: UIView, ReactorView
 /// the implementation of the `ReactorView` protocol.
 ///
 /// It adds all necessary properties and calls the `bind(reactor:)` method for you, when the `reactor` is being set
-open class BaseReactorViewController<Reactor: SwiftUIReactor.Reactor>: UIViewController, ReactorView {
+open class BaseReactorViewController<Reactor: SwiftyReactor.Reactor>: UIViewController, ReactorView {
     public var reactor: Reactor? {
         didSet {
             guard let reactor = reactor else { return }
