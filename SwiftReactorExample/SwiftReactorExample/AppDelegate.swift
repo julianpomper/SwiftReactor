@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  SwiftyReactorExample
+//  SwiftReactorExample
 //
 //  Created by Dominik Arnhof on 28.07.20.
 //  Copyright © 2020 Dominik Arnhof. All rights reserved.

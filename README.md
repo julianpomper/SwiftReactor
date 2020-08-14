@@ -1,4 +1,4 @@
-# SwiftyReactor
+# SwiftReactor
 
 A protocol which should help to structure your data flow in SwiftUI (and UIKit).
 
@@ -13,7 +13,7 @@ I highly encourage you to read the concept of this architecture in the ReactorKi
 
 ## Usage
 
-To see the SwiftyReactor in action, clone this repository and try the [example project](https://github.com/julianpomper/SwiftyReactor/tree/master/SwiftyReactorExample)
+To see the SwiftReactor in action, clone this repository and try the [example project](https://github.com/julianpomper/SwiftReactor/tree/master/SwiftReactorExample)
 
 ### Reactor
 
@@ -339,7 +339,7 @@ If you do not want to inherit the `BaseReactor` class, you can also implement th
 <details>
 <summary>Click here to expand</summary>
 
-`SwiftyReactor` is also compatible with UIKit if you need it.  To use it, you have to select and install the additional library `SwiftyReactorUIKit` when you add the SwiftPackage to your project.
+`SwiftReactor` is also compatible with UIKit if you need it.  To use it, you have to select and install the additional library `SwiftReactorUIKit` when you add the SwiftPackage to your project.
 
 1. inherit from the `BaseReactorView` or `BaseReactorViewController` class
 2. set the `reactor` property somewhere (ex.: when the `UIView` or `UIViewController` is being created)
@@ -382,11 +382,11 @@ final class BaseCountingViewController: BaseReactorViewController<CountingReacto
 
 The Swift Package Manager is a tool for automating the distribution of swift code and is integrated into the swift compiler.
 
-Once you have your Swift package set up (ex: with [this guide](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app)), adding SwiftyReactor as a dependency is as easy as adding it to the dependencies value of your `Package.swift`.
+Once you have your Swift package set up (ex: with [this guide](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app)), adding SwiftReactor as a dependency is as easy as adding it to the dependencies value of your `Package.swift`.
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/julianpomper/SwiftyReactor.git", from: "2.0.0")
+    .package(url: "https://github.com/julianpomper/SwiftReactor.git", from: "2.0.0")
 ]
 ```
 
@@ -406,4 +406,4 @@ If you prefer not to use any of the aforementioned dependency managers, you can 
 
 ## License
 
-SwiftyReactor is released under the MIT license. [See LICENSE](https://github.com/julianpomper/SwiftyReactor/blob/master/LICENSE) for details.
+SwiftReactor is released under the MIT license. [See LICENSE](https://github.com/julianpomper/SwiftReactor/blob/master/LICENSE) for details.

@@ -1,13 +1,13 @@
 //
 //  ContentView.swift
-//  SwiftyReactorExample
+//  SwiftReactorExample
 //
 //  Created by Dominik Arnhof on 28.07.20.
 //  Copyright © 2020 Dominik Arnhof. All rights reserved.
 //
 
 import SwiftUI
-import SwiftyReactor
+import SwiftReactor
 
 struct ContentView: View {
     @ActionBinding(\ExampleReactor.self, keyPath: \.text, action: ExampleReactor.Action.enterText)
