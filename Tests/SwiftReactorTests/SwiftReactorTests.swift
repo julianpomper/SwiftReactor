@@ -1,8 +1,8 @@
 import XCTest
-@testable import SwiftyReactor
+@testable import SwiftReactor
 import Combine
 
-final class SwiftyReactorTests: XCTestCase {
+final class SwiftReactorTests: XCTestCase {
     var reactor: CountingReactor!
     
     var cancellables = Set<AnyCancellable>()

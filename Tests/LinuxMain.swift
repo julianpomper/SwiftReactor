@@ -1,7 +1,7 @@
 import XCTest
 
-import SwiftyReactorTests
+import SwiftReactorTests
 
 var tests = [XCTestCaseEntry]()
-tests += SwiftyReactorTests.allTests()
+tests += SwiftReactorTests.allTests()
 XCTMain(tests)
