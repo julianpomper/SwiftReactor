@@ -26,7 +26,7 @@ For a basic setup just:
 and you are ready to go.
 
 <details>
-<summary>Click here so show an example</summary>
+<summary>Click here to show an example</summary>
 
 ```swift
 class ExampleReactor: BaseReactor<ExampleReactor.Action, ExampleReactor.Mutation, ExampleReactor.State> {
@@ -346,7 +346,7 @@ If you do not want to inherit the `BaseReactor` class, you can also implement th
 3. implement the `bind(reactor:)` method and add your bindings
 
 <details>
-<summary>Click here so show an example</summary>
+<summary>Click here to show an example</summary>
 
 ```swift
 let countingViewController = BaseCountingViewController()
