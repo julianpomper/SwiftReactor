@@ -1,13 +1,13 @@
 //
 //  ExampleReactor.swift
-//  SwiftUIReactorExample
+//  SwiftyReactorExample
 //
 //  Created by Dominik Arnhof on 28.07.20.
 //  Copyright © 2020 Dominik Arnhof. All rights reserved.
 //
 
 import Foundation
-import SwiftUIReactor
+import SwiftyReactor
 import Combine
 import SwiftUI
 

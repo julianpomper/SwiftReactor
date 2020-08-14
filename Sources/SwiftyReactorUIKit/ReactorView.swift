@@ -10,14 +10,14 @@
 import UIKit
 import Combine
 
-import SwiftUIReactor
+import SwiftyReactor
 
 /// A protocol to use the `Reactor` with UIKit
 ///
 /// - Important: call the `setAndBind(reactor:)` method to set the reactor and call the `bind(reactor:)` method
 ///
 public protocol ReactorView: class {
-    associatedtype Reactor = SwiftUIReactor.Reactor
+    associatedtype Reactor = SwiftyReactor.Reactor
     /**
         use `setAndBind` to set the reactor and call the `bind(reactor:)` method
         otherwise you can set your custom `didSet` for your reactor variable
