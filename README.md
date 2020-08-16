@@ -1,6 +1,6 @@
 # SwiftReactor
 
-A protocol which should help to structure your data flow in SwiftUI (and UIKit).
+A protocol which should help structure your data flow in SwiftUI (and UIKit).
 
 Inspired by [@devxoul](https://github.com/devxoul)´s [ReactorKit](https://www.github.com/ReactorKit/ReactorKit).
 
@@ -94,13 +94,13 @@ class ExampleReactor: BaseReactor<ExampleReactor.Action, ExampleReactor.Mutation
 </details>
 
 #### `mutate(action: Action)`
-This method takes an `Action` and transforms it sync or async into an mutation.
+This method takes an `Action` and transforms it synchronously or asynchronously into a mutation.
 **If you have any side effects do it here.**
 
 Return `sync` mutations if you want to mutate the state instantly
 and sychronously on the main thread.  `Binding` and `withAnimation` require the state to be changed
 on the main thread synchronously. For that reason use `sync` mutations for
-this use cases.
+these use cases.
 
 
 Return `async` mutations if you have to do async tasks (ex.: network requests)
@@ -124,7 +124,7 @@ func mutate(action: Action) -> Mutations {
  
  #### `reduce(state: State, mutation: Mutation)`
  This method takes a `State` and a `Mutation` and returns a new mutated `State`.
- **Don't perform any side effects in this method. Extract them to the `mutate(action: Action)`**
+ **Don't perform any side effects in this method. Extract them to the `mutate(action: Action)` function**
  
  ```swift
  func reduce(state: State, mutation: Mutation) -> State {
