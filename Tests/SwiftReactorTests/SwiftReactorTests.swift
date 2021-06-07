@@ -4,11 +4,13 @@ import Combine
 
 final class SwiftReactorTests: XCTestCase {
     var reactor: CountingReactor!
+    var transformReactor: TransformCountingReactor!
     
     var cancellables = Set<AnyCancellable>()
     
     override func setUp() {
         reactor = CountingReactor()
+        transformReactor = TransformCountingReactor()
     }
     
     func testConcurrentAction() {
@@ -94,6 +96,21 @@ final class SwiftReactorTests: XCTestCase {
         }
         XCTAssertEqual(reactor.state.currentCount, amount)
     }
+
+    func testTransforms() {
+        let exp = expectation(description: "counted")
+        exp.expectedFulfillmentCount = 3
+
+        transformReactor.$state
+            .sink { _ in exp.fulfill() }
+            .store(in: &cancellables)
+
+        transformReactor.action(.countUp)
+
+        waitForExpectations(timeout: 3, handler: nil)
+
+        XCTAssertEqual(transformReactor.state.currentCount, 4)
+    }
 }
 
 final class CountingReactor: BaseReactor<CountingReactor.Action, CountingReactor.Mutation, CountingReactor.State> {
@@ -134,5 +151,62 @@ final class CountingReactor: BaseReactor<CountingReactor.Action, CountingReactor
         
         return newState
     }
-    
+}
+
+final class TransformCountingReactor: BaseReactor<TransformCountingReactor.Action, TransformCountingReactor.Mutation, TransformCountingReactor.State> {
+
+    enum Action {
+        case countUp
+        case countUpTwo
+        case countUpAsync
+    }
+
+    enum Mutation {
+        case countUp
+        case countUpTwo
+    }
+
+    struct State {
+        var currentCount: Int = 0
+    }
+
+    init() {
+        super.init(initialState: State())
+    }
+
+    override func mutate(action: Action) -> Mutations<Mutation> {
+        switch action {
+        case .countUp:
+            return [.countUp]
+        case .countUpTwo:
+            return [.countUpTwo]
+        case .countUpAsync:
+            return Mutations(async: Just(.countUp).eraseToAnyPublisher())
+        }
+    }
+
+    override func reduce(state: State, mutation: Mutation) -> State {
+        var newState = state
+
+        switch mutation {
+        case .countUp:
+            newState.currentCount += 1
+        case .countUpTwo:
+            newState.currentCount += 2
+        }
+
+        return newState
+    }
+
+    override func transform(action: AnyPublisher<Action, Never>) -> AnyPublisher<Action, Never> {
+        action
+            .prepend(.countUpTwo)
+            .eraseToAnyPublisher()
+    }
+
+    override func transform(mutation: AnyPublisher<Mutation, Never>) -> AnyPublisher<Mutation, Never> {
+        mutation
+            .prepend(.countUp)
+            .eraseToAnyPublisher()
+    }
 }

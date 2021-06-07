@@ -197,7 +197,6 @@ public extension Reactor {
             }
             .filter { $0.forward }
             .map { $0.state }
-            .prepend(initialState)
             .eraseToAnyPublisher()
         
         transform(state: state)
