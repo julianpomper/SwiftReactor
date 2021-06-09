@@ -68,6 +68,7 @@ final class SwiftReactorTests: XCTestCase {
         
         reactor.$state
             .sink { state in
+                XCTAssertTrue(Thread.current.isMainThread)
                 if state.currentCount == amount {
                     exp.fulfill()
                 }
@@ -99,10 +100,14 @@ final class SwiftReactorTests: XCTestCase {
 
     func testTransforms() {
         let exp = expectation(description: "counted")
-        exp.expectedFulfillmentCount = 3
+        exp.expectedFulfillmentCount = 2
 
         transformReactor.$state
-            .sink { _ in exp.fulfill() }
+            .sink { state in
+                XCTAssertTrue(Thread.current.isMainThread)
+                print("currentCount", state.currentCount)
+                exp.fulfill()
+            }
             .store(in: &cancellables)
 
         transformReactor.action(.countUp)
@@ -110,6 +115,22 @@ final class SwiftReactorTests: XCTestCase {
         waitForExpectations(timeout: 3, handler: nil)
 
         XCTAssertEqual(transformReactor.state.currentCount, 4)
+    }
+    
+    func testInitialState() {
+        let exp = expectation(description: "initial")
+
+            reactor.$state
+            .sink { state in
+                XCTAssertTrue(Thread.current.isMainThread)
+                XCTAssertEqual(state.currentCount, 0)
+                exp.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        waitForExpectations(timeout: 3, handler: nil)
+
+        XCTAssertEqual(reactor.state.currentCount, 0)
     }
 }
 
