@@ -65,6 +65,12 @@ class ExampleReactor: BaseReactor<ExampleReactor.Action, ExampleReactor.Mutation
         
         return newState
     }
+
+    override func transform(action: AnyPublisher<Action, Never>) -> AnyPublisher<Action, Never> {
+        action
+            .prepend(.setSwitchAsync(true))
+            .eraseToAnyPublisher()
+    }
     
     override func transform(mutation: AnyPublisher<Mutation, Never>) -> AnyPublisher<Mutation, Never> {
         mutation

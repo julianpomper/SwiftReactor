@@ -197,13 +197,17 @@ public extension Reactor {
             }
             .filter { $0.forward }
             .map { $0.state }
-            .prepend(initialState)
             .eraseToAnyPublisher()
         
         transform(state: state)
-            .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] state in
-                self?.state = state
+                if Thread.current.isMainThread {
+                    self?.state = state
+                } else {
+                    DispatchQueue.main.sync {
+                        self?.state = state
+                    }
+                }
             })
             .store(in: &cancellables)
     }
