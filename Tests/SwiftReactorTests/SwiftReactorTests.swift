@@ -114,13 +114,13 @@ final class SwiftReactorTests: XCTestCase {
 
         waitForExpectations(timeout: 3, handler: nil)
 
-        XCTAssertEqual(transformReactor.state.currentCount, 4)
+        XCTAssertEqual(transformReactor.state.currentCount, 5)
     }
     
     func testInitialState() {
         let exp = expectation(description: "initial")
 
-            reactor.$state
+        reactor.$state
             .sink { state in
                 XCTAssertTrue(Thread.current.isMainThread)
                 XCTAssertEqual(state.currentCount, 0)
@@ -220,8 +220,10 @@ final class TransformCountingReactor: BaseReactor<TransformCountingReactor.Actio
     }
 
     override func transform(action: AnyPublisher<Action, Never>) -> AnyPublisher<Action, Never> {
-        action
+        let merge = Just(Action.countUpAsync)
+        return action
             .prepend(.countUpTwo)
+            .merge(with: merge)
             .eraseToAnyPublisher()
     }
 

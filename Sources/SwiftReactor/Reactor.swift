@@ -179,11 +179,12 @@ public extension Reactor {
             }
             .eraseToAnyPublisher()
         
-        let transformedMutation = transform(mutation: mutation)
-            .merge(with: self.mutation)
-            .map { MutationEvent<Mutation, State>.mutation($0) }
-            .merge(with: syncMutationResults.map { MutationEvent<Mutation, State>.state($0) })
-
+        let transformedMutation = syncMutationResults
+            .map { MutationEvent<Mutation, State>.state($0) }
+            .merge(with: transform(mutation: mutation)
+                    .merge(with: self.mutation)
+                    .map { MutationEvent<Mutation, State>.mutation($0) })
+        
         let state = transformedMutation
             .scan(InternalState(state: initialState, forward: true)) { [weak self] internalState, mutation -> InternalState<State> in
                 guard let self = self else { return internalState }
