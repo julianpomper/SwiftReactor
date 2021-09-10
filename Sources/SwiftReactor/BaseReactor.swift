@@ -48,3 +48,28 @@ open class BaseReactor<Action, Mutation, State>: Reactor {
         state
     }
 }
+
+#if compiler(>=5.5)
+@available(iOS 15.0.0, macOS 12, tvOS 15, watchOS 8, *)
+extension BaseReactor {
+
+    /// Sends an action and suspends while the predicate is `true`.
+    ///
+    /// This method can be used to interact with async/await code, allowing you to suspend during an async mutation.
+    ///
+    /// Example:
+    /// ```swift
+    /// .refreshable {
+    ///     await reactor.action(.refresh, while: \.isLoading)
+    /// }
+    /// ```
+    ///
+    public func action(_ action: Action, `while` predicate: @escaping (State) -> Bool) async {
+        self.action(action)
+        _ = await $state
+            .values
+            .first(where: { !predicate($0) })
+    }
+}
+#endif
+
