@@ -21,27 +21,47 @@ struct ContentView: View {
     
     @ActionBinding(\ExampleReactor.self, keyPath: \.backgroundColor, action: ExampleReactor.Action.colorChangePressed)
     private var backgroundColor: Color
+
+    @EnvironmentObject
+    private var reactor: ExampleReactor
     
     var body: some View {
-        VStack(spacing: 8) {
-            TextField("Text", text: $text)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-            Text(text)
-            
-            Toggle(isOn: $switchValue, label: { Text("Switch \(String(switchValue))") })
-            
-            Toggle(isOn: $switchValueAsync, label: { Text("Switch async \(String(switchValueAsync))") })
-            
-            Button(action: {
-                withAnimation(.spring()) {
-                    self.backgroundColor = [Color.red, .orange, .green].randomElement() ?? .white
+        #if compiler(>=5.5)
+        if #available(iOS 15.0, *) {
+            list
+                .refreshable {
+                    await reactor.action(.setSwitchAsync(true), while: \.switchValue)
                 }
-            }, label: {
-                Text("Random Color")
-            })
+        } else {
+            list
         }
-        .padding()
-        .background(backgroundColor)
+        #else
+        list
+        #endif
+    }
+
+    private var list: some View {
+        List {
+            VStack(spacing: 8) {
+                TextField("Text", text: $text)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                Text(text)
+
+                Toggle(isOn: $switchValue, label: { Text("Switch \(String(switchValue))") })
+
+                Toggle(isOn: $switchValueAsync, label: { Text("Switch async \(String(switchValueAsync))") })
+
+                Button(action: {
+                    withAnimation(.spring()) {
+                        self.backgroundColor = [Color.red, .orange, .green].randomElement() ?? .white
+                    }
+                }, label: {
+                    Text("Random Color")
+                })
+            }
+            .padding()
+            .background(backgroundColor)
+        }
     }
 }
 

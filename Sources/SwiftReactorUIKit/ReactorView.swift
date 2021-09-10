@@ -16,7 +16,7 @@ import SwiftReactor
 ///
 /// - Important: call the `setAndBind(reactor:)` method to set the reactor and call the `bind(reactor:)` method
 ///
-public protocol ReactorView: class {
+public protocol ReactorView: AnyObject {
     associatedtype Reactor = SwiftReactor.Reactor
     /**
         use `setAndBind` to set the reactor and call the `bind(reactor:)` method

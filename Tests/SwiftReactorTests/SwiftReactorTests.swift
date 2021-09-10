@@ -100,7 +100,7 @@ final class SwiftReactorTests: XCTestCase {
 
     func testTransforms() {
         let exp = expectation(description: "counted")
-        exp.expectedFulfillmentCount = 2
+        exp.expectedFulfillmentCount = 103
 
         transformReactor.$state
             .sink { state in
@@ -110,11 +110,13 @@ final class SwiftReactorTests: XCTestCase {
             }
             .store(in: &cancellables)
 
-        transformReactor.action(.countUp)
+        for _ in (0...100) {
+            transformReactor.action(.countUpAsync)
+        }
 
         waitForExpectations(timeout: 3, handler: nil)
 
-        XCTAssertEqual(transformReactor.state.currentCount, 5)
+        XCTAssertEqual(transformReactor.state.currentCount, 106)
     }
     
     func testInitialState() {
@@ -221,9 +223,13 @@ final class TransformCountingReactor: BaseReactor<TransformCountingReactor.Actio
 
     override func transform(action: AnyPublisher<Action, Never>) -> AnyPublisher<Action, Never> {
         let merge = Just(Action.countUpAsync)
+
+        let mergeDelay = Just(Action.countUp)
+            .delay(for: 1, scheduler: DispatchQueue.main)
+
         return action
             .prepend(.countUpTwo)
-            .merge(with: merge)
+            .merge(with: merge, mergeDelay)
             .eraseToAnyPublisher()
     }
 
