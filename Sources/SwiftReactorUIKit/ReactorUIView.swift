@@ -1,5 +1,5 @@
 //
-//  ReactorView.swift
+//  ReactorUIView.swift
 //  
 //
 //  Created by Julian Pomper on 08.08.20.
@@ -16,7 +16,7 @@ import SwiftReactor
 ///
 /// - Important: call the `setAndBind(reactor:)` method to set the reactor and call the `bind(reactor:)` method
 ///
-public protocol ReactorView: class {
+public protocol ReactorUIView: AnyObject {
     associatedtype Reactor = SwiftReactor.Reactor
     /**
         use `setAndBind` to set the reactor and call the `bind(reactor:)` method
@@ -53,7 +53,7 @@ public protocol ReactorView: class {
     func setAndBind(reactor: Reactor)
 }
 
-public extension ReactorView {
+public extension ReactorUIView {
     func setAndBind(reactor: Reactor) {
         self.reactor = reactor
         bind(reactor: reactor)

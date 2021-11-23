@@ -5,7 +5,7 @@
 //  Created by Julian Pomper on 08.08.20.
 //
 
-#if canImport(UIKit)
+#if canImport(UIKit) && !os(watchOS)
 
 import UIKit
 import Combine
@@ -76,7 +76,7 @@ final class BaseCountingViewController: BaseReactorViewController<CountingReacto
     }
 }
 
-final class CountingViewController: UIViewController, ReactorView {
+final class CountingViewController: UIViewController, ReactorUIView {
     typealias Reactor = CountingReactor
     
     var reactor: Reactor?

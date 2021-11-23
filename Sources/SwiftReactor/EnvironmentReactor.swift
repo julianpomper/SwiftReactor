@@ -1,8 +1,8 @@
 //
-//  File.swift
+//  EnvironmentReactor.swift
 //  
 //
-//  Created by Dominik on 08.08.20.
+//  Created by oanhof on 08.08.20.
 //
 
 import SwiftUI
