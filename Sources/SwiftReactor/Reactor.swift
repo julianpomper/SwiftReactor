@@ -182,6 +182,7 @@ public extension Reactor {
         let transformedMutation = syncMutationResults
             .map { MutationEvent<Mutation, State>.state($0) }
             .merge(with: transform(mutation: mutation)
+                    .receive(on: DispatchQueue.main)
                     .merge(with: self.mutation)
                     .map { MutationEvent<Mutation, State>.mutation($0) })
         
