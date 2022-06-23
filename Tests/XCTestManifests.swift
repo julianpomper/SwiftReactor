@@ -5,8 +5,9 @@ public func allTests() -> [XCTestCaseEntry] {
     return [
         testCase(SwiftReactorTests.allTests),
         #if canImport(UIKit)
-        testCase(SwiftReactorUIKitTests.allTests)
+        testCase(SwiftReactorUIKitTests.allTests),
         #endif
+        testCase(AsyncReactorTests.allTests)
     ]
 }
 #endif

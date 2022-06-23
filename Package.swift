@@ -15,10 +15,16 @@ let package = Package(
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(
             name: "SwiftReactor",
-            targets: ["SwiftReactor"]),
+            targets: ["SwiftReactor"]
+        ),
         .library(
             name: "SwiftReactorUIKit",
-            targets: ["SwiftReactorUIKit"]),
+            targets: ["SwiftReactorUIKit"]
+        ),
+        .library(
+            name: "AsyncReactor",
+            targets: ["AsyncReactor"]
+        )
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -30,16 +36,29 @@ let package = Package(
         .target(
             name: "SwiftReactor",
             dependencies: [],
-            path: "Sources/SwiftReactor"),
+            path: "Sources/SwiftReactor"
+        ),
         .target(
             name: "SwiftReactorUIKit",
             dependencies: ["SwiftReactor"],
-            path: "Sources/SwiftReactorUIKit"),
+            path: "Sources/SwiftReactorUIKit"
+        ),
+        .target(
+            name: "AsyncReactor",
+            dependencies: [],
+            path: "Sources/AsyncReactor"
+        ),
         .testTarget(
             name: "SwiftReactorTests",
-            dependencies: ["SwiftReactor"]),
+            dependencies: ["SwiftReactor"]
+        ),
         .testTarget(
             name: "SwiftReactorUIKitTests",
-            dependencies: ["SwiftReactorUIKit"])
+            dependencies: ["SwiftReactorUIKit"]
+        ),
+        .testTarget(
+            name: "AsyncReactorTests",
+            dependencies: ["AsyncReactor"]
+        )
     ]
 )
