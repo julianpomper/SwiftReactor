@@ -100,7 +100,7 @@ final class SwiftReactorTests: XCTestCase {
 
     func testTransforms() {
         let exp = expectation(description: "counted")
-        exp.expectedFulfillmentCount = 2
+        exp.expectedFulfillmentCount = 4
 
         transformReactor.$state
             .sink { state in
